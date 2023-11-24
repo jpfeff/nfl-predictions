@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import time
 import pandas as pd
 
@@ -74,8 +74,6 @@ def load_df(binary, fields, start_year, end_year):
     # filter by years
     df = df[(df['year'] >= start_year) & (df['year'] <= end_year)]
 
-    print(df.head())
-
     # filter by fields
     df = df[fields]
 
@@ -87,16 +85,44 @@ def drop_columns(df):
         df.drop(columns=['year', 'week', 'postseason', 'team1', 'team2'], inplace=True)
     return df
 
-@app.route('/df')
-def get_df():
-    return load_df(False, ['year', 'week', 'team1', 'team2', 'team1_win'], 2013, 2022).to_json(orient='records')
-
-@app.route('/accuracy')
+# post request
+@app.route('/accuracy', methods=['POST'])
 def get_accuracy():
-    df = load_df(True, ['team1_win', 'Pass Yds_team1'], 2013, 2022)
+    # get data from request
+    data = request.get_json()
+
+    # get binary from data
+    binary = bool(data['binary'])
+
+    # get start_year from data
+    start_year = int(data['start_year'])
+
+    # get end_year from data
+    end_year = int(data['end_year'])
+
+    # get fields from data
+    fields = list(data['fields'])
+    if binary:
+        fields.append('team1_win')
+    else:
+        fields.append('team1_score')
+
+    # load data
+    df = load_df(binary, fields, start_year, end_year)
+
+    print(df.head())
+
+    # drop columns
     df = drop_columns(df)
-    return str(run_logistic_regression(df))
+
+    # run logistic regression
+    accuracy = run_logistic_regression(df)
+
+    return str(accuracy)
 
 @app.route('/time')
 def get_current_time():
     return {'time': time.time()}
+
+if __name__ == "__main__":
+    app.run(port=8000, debug=True)
