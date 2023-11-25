@@ -25,13 +25,13 @@ function Predictor() {
 
 
   const handlePredict = async () => {
+    setLoading(true);
     if (fields.length === 0) {
+      setLoading(false);
       warning()
       return
     }
     try {
-      setLoading(true); // Set loading to true before making the API call
-  
       const response = await apiRequest({
         method: 'post',
         url: 'https://cs89-project-backend.onrender.com/accuracy',
@@ -48,7 +48,7 @@ function Predictor() {
     } catch (error) {
       console.error('Error predicting:', error);
     } finally {
-      setLoading(false); // Set loading back to false after the API call completes
+      setLoading(false); 
     }
   };
 
