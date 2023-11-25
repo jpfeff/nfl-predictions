@@ -1,6 +1,6 @@
 from flask import Flask, request
-import time
 import pandas as pd
+from flask_cors import CORS
 
 # HOW TO RUN
 
@@ -14,6 +14,7 @@ import pandas as pd
 # $ python -m flask run --reload (restarts server after changes)
 
 app = Flask(__name__)
+CORS(app)
 
 def compute_winners(scores):
     # empty result to hold results
@@ -47,8 +48,20 @@ def load_df(binary, fields, start_year, end_year):
     df = df[(df['year'] >= start_year) & (df['year'] <= end_year)]
 
     # filter by fields
-    df = df[fields]
 
+    if not binary:
+        df = df[fields]
+        return df
+
+    new_fields = []
+    for field in fields:
+        if field == 'team1_win':
+            new_fields.append(field)
+            continue
+        new_fields.append(field + '_team1')
+        new_fields.append(field + '_team2')
+    
+    df = df[new_fields]
     return df
 
 def drop_columns(df):
@@ -341,19 +354,20 @@ def get_accuracy():
         accuracy = run_random_forest_binary(df)
     elif model == 'NB' and binary:
         accuracy = run_naive_bayes(df)
-    elif model == 'SVC' and binary:
+    elif model == 'SVM' and binary:
         accuracy = run_svm_binary(df)
     elif model == 'NN' and binary:
         accuracy = run_nn_binary(df)
-    elif model == 'LR' and not binary:
+    elif model == 'LRR' and not binary:
         accuracy = run_linear_regression(df)
     elif model == 'RF' and not binary:
         accuracy = run_random_forest_regression(df)
-    elif model == 'SVC' and not binary:
+    elif model == 'SVM' and not binary:
         accuracy = run_svm_regression(df)
     elif model == 'NN' and not binary:
         accuracy = run_nn(df)
 
+    print('Accuracy: ', accuracy)
     return str(accuracy)
 
 if __name__ == "__main__":
