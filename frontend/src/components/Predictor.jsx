@@ -35,7 +35,7 @@ function Predictor() {
     try {
       const response = await apiRequest({
         method: 'post',
-        url: 'http://127.0.0.1:8000/accuracy',
+        url: 'https://cs89-project-backend.onrender.com/accuracy',
         data: {
           binary: binary,
           fields: fields,
