@@ -24,3 +24,22 @@
   flex-direction: row;
   gap: 1rem;
 }
+
+.data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 30rem;
+  gap: 3rem;
+}
+
+.slider {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ant-select-selector {
+  max-height: 5.5rem;
+  overflow: scroll;
+}

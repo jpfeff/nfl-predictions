@@ -11,6 +11,7 @@ function Predictor() {
   const [fields, setFields] = useState([])
   const [model, setModel] = useState('LR')
   const [prediction, setPrediction] = useState(0)
+  const [testSize, setTestSize] = useState(20)
 
   const [loading, setLoading] = useState(false);
 
@@ -34,13 +35,14 @@ function Predictor() {
     try {
       const response = await apiRequest({
         method: 'post',
-        url: 'https://cs89-project-backend.onrender.com/accuracy',
+        url: 'http://127.0.0.1:8000/accuracy',
         data: {
           binary: binary,
           fields: fields,
           model: model,
           start_year: startYear,
           end_year: endYear,
+          test_size: testSize * 0.01
         },
       });
   
@@ -88,7 +90,10 @@ function Predictor() {
           </div>
           <div>
             <Divider orientation="center">3. Choose training data years</Divider>
-            <Slider min={2013} 
+            <div className="data">
+              <div className='slider' style={{marginBottom: '-20px'}}>
+                <Slider 
+                    min={2013} 
                     max={2022} 
                     range 
                     defaultValue={[2013, 2022]}
@@ -98,10 +103,29 @@ function Predictor() {
                       setEndYear(value[1])
                     }}
                     value={[startYear, endYear]}
-                     />
+                ></Slider>
+              </div>
+
+            </div>
           </div>
           <div className="section">
-            <Divider orientation="center">4. Choose training data features</Divider>
+            <Divider orientation="center">4. Choose test set size</Divider>
+            <div className="data">
+              <div className='slider'>
+                <Slider
+                  min={10}
+                  max={50}
+                  step={10}
+                  defaultValue={0}
+                  marks={{10: '10%', 20: '20%', 30: '30%', 40: '40%', 50: '50%'}}
+                  value={testSize}
+                  onChange={(value) => setTestSize(value)}
+                ></Slider>
+                </div>
+              </div>
+          </div>
+          <div className="section">
+            <Divider orientation="center">5. Choose training data features</Divider>
             <div className="select-all">
               <Select
                 placeholder="Select features"
@@ -121,7 +145,7 @@ function Predictor() {
             
           </div>
           <div className="section">
-            <Divider orientation="center">5. Train Model and Evaluate Accuracy</Divider>
+            <Divider orientation="center">6. Train model and evaluate accuracy</Divider>
             <Button type="primary" loading={loading} onClick={handlePredict}>Compute Model Accuracy</Button>
           </div>
           {prediction !== null &&

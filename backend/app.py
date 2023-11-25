@@ -31,6 +31,10 @@ def process_predictions(pred_scores):
     return [int(max(0, score)) for score in pred_scores]
 
 def compute_accuracy(pred_scores, actual_scores):
+    if len(pred_scores) % 2 != 0:
+        pred_scores = pred_scores[:-1]
+    if len(actual_scores) % 2 != 0:
+        actual_scores = actual_scores[:-1]
     # winner determined by model
     pred_winners = compute_winners(pred_scores)
     # actual winner of the game
@@ -80,11 +84,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 
-def run_logistic_regression(df):
+def run_logistic_regression(df, test_size):
   X = df.drop(columns=['team1_win'])
   y = df['team1_win']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -105,11 +109,11 @@ def run_logistic_regression(df):
 
 from sklearn.ensemble import RandomForestClassifier
 
-def run_random_forest_binary(df):
+def run_random_forest_binary(df, test_size):
   X = df.drop(columns=['team1_win'])
   y = df['team1_win']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -130,11 +134,11 @@ def run_random_forest_binary(df):
 
 from sklearn.naive_bayes import GaussianNB
 
-def run_naive_bayes(df):
+def run_naive_bayes(df, test_size):
   X = df.drop(columns=['team1_win'])
   y = df['team1_win']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -155,11 +159,11 @@ def run_naive_bayes(df):
 
 from sklearn.svm import SVC
 
-def run_svm_binary(df):
+def run_svm_binary(df, test_size):
   X = df.drop(columns=['team1_win'])
   y = df['team1_win']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -184,11 +188,11 @@ from tensorflow.keras.optimizers.legacy import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
 
-def run_nn_binary(df):
+def run_nn_binary(df, test_size):
   X = df.drop(columns=['team1_win'])
   y = df['team1_win']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -217,11 +221,11 @@ def run_nn_binary(df):
 
 from sklearn.linear_model import LinearRegression
 
-def run_linear_regression(df):
+def run_linear_regression(df, test_size):
   X = df.drop(columns=['team1_score'])
   y = df['team1_score']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -242,11 +246,11 @@ def run_linear_regression(df):
 
 from sklearn.ensemble import RandomForestRegressor
 
-def run_random_forest_regression(df):
+def run_random_forest_regression(df, test_size):
   X = df.drop(columns=['team1_score'])
   y = df['team1_score']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -267,11 +271,11 @@ def run_random_forest_regression(df):
 
 from sklearn.svm import SVR
 
-def run_svm_regression(df):
+def run_svm_regression(df, test_size):
   X = df.drop(columns=['team1_score'])
   y = df['team1_score']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -290,11 +294,11 @@ def run_svm_regression(df):
 
 # NN
 
-def run_nn(df):
+def run_nn(df, test_size):
   X = df.drop(columns=['team1_score'])
   y = df['team1_score']
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
   # scale data
   scaler = StandardScaler()
@@ -342,6 +346,8 @@ def get_accuracy():
     
     model = data['model']
 
+    test_size = float(data['test_size'])
+
     # load data
     df = load_df(binary, fields, start_year, end_year)
 
@@ -349,23 +355,23 @@ def get_accuracy():
     df = drop_columns(df)
 
     if model == 'LR' and binary:
-        accuracy = run_logistic_regression(df)
+        accuracy = run_logistic_regression(df, test_size)
     elif model == 'RF' and binary:
-        accuracy = run_random_forest_binary(df)
+        accuracy = run_random_forest_binary(df, test_size)
     elif model == 'NB' and binary:
-        accuracy = run_naive_bayes(df)
+        accuracy = run_naive_bayes(df, test_size)
     elif model == 'SVM' and binary:
-        accuracy = run_svm_binary(df)
+        accuracy = run_svm_binary(df, test_size)
     elif model == 'NN' and binary:
-        accuracy = run_nn_binary(df)
+        accuracy = run_nn_binary(df, test_size)
     elif model == 'LRR' and not binary:
-        accuracy = run_linear_regression(df)
+        accuracy = run_linear_regression(df, test_size)
     elif model == 'RF' and not binary:
-        accuracy = run_random_forest_regression(df)
+        accuracy = run_random_forest_regression(df, test_size)
     elif model == 'SVM' and not binary:
-        accuracy = run_svm_regression(df)
+        accuracy = run_svm_regression(df, test_size)
     elif model == 'NN' and not binary:
-        accuracy = run_nn(df)
+        accuracy = run_nn(df, test_size)
 
     print('Accuracy: ', accuracy)
     return str(accuracy)
