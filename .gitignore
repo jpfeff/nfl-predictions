@@ -2,3 +2,6 @@ backend/venv/
 .DS_Store
 backend/.DS_Store
 backend/__pycache__/
+
+node_modules/
+dist/
