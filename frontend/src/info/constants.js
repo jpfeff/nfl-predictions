@@ -1,5 +1,5 @@
-export const binaryModels = ['LR', 'RF', 'SVM', 'NB', 'NN']
-export const regressionModels = ['LRR', 'RF', 'SVM', 'NN']
+export const binaryModels = ['LR', 'RF', 'SVM', 'NB']
+export const regressionModels = ['LRR', 'RF', 'SVM']
 
 export const modelAbbreviations = {
   'LR': 'Logistic Regression',
@@ -7,7 +7,6 @@ export const modelAbbreviations = {
   'RF': 'Random Forest',
   'SVM': 'Support Vector Machine',
   'NB': 'Naive Bayes',
-  'NN': 'Neural Network',
 };
 
 

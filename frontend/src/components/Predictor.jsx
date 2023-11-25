@@ -34,7 +34,7 @@ function Predictor() {
   
       const response = await apiRequest({
         method: 'post',
-        url: 'http://127.0.0.1:8000/accuracy',
+        url: 'https://cs89-project-backend.onrender.com/accuracy',
         data: {
           binary: binary,
           fields: fields,
@@ -45,15 +45,12 @@ function Predictor() {
       });
   
       setPrediction(response.data);
-      console.log('Predicting...');
-      console.log(binary, fields, model, startYear, endYear);
     } catch (error) {
       console.error('Error predicting:', error);
     } finally {
       setLoading(false); // Set loading back to false after the API call completes
     }
   };
-  
 
   const handleBinaryChange = (e) => {
     // if the model is not in the list of binary models, change the model to the first binary model
